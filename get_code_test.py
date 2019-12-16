@@ -122,6 +122,12 @@ class code_cfg:
             for index in sorted(self.id2feat.keys()):
                 csv_write.writerow(self.id2feat[index])
 
+    def dump_code(self, output_file):
+        with open(output_file, 'w') as fp:
+#            csv_write = csv.writer(fp)
+#            csv_write.writerow(feature_list)
+            for index in sorted(self.id2code.keys()):
+                fp.write((self.id2code[index]).lower() + '\n')
 
     def bfs(self, source, j):
         level = 0
@@ -186,8 +192,10 @@ def get_func_cfg(file_node, j, func, uid, output_folder):
     g.bfs(func, j)
     #g.print_graph()
     g.get_feature()
+#    print(output_folder)
     g.dump_graph(os.path.join(output_folder, "%s.edge_list" %(uid)))
     g.dump_feature(os.path.join(output_folder, "%s.feat" %(uid)))
+    g.dump_code(os.path.join(output_folder, "%s.code" %(uid)))
 
 
 def dump_file_map(file_map, output_folder):
@@ -211,20 +219,20 @@ def get_content(j, output_folder):
 #    #query = 'g.v(' + str(cur._id) + ').out().{it.type == "Function"}'
         query = 'g.v(' + str(cur._id) + ').out' #().{it.type == "Function"}'
         func_list = j.runGremlinQuery(query)
+        print(len(func_list))
         index = 0
         for func in func_list:
             index += 1
+#            print(func['type'], func['name'])
 #            if index > 3:
-#                break
+##                break
             if func['type'] == 'Function':
                 get_func_cfg(cur, j, func, uid, output_folder)
                 file_map.append([cur['filepath'], func['name']])
                 uid += 1
-#            if uid > 3:
-#                break
-#        break
-
-    dump_file_map(file_map, output_folder)
+        break
+#
+#    dump_file_map(file_map, output_folder)
 
 def main(db_folder, output_folder):
 
@@ -232,11 +240,11 @@ def main(db_folder, output_folder):
         raise Exception('%s does not exist' %(db_folder))
         exit(-1)
 
-    stop_db()
-    start_db(db_folder)
+#    stop_db()
+#    start_db(db_folder)
     j = connect_db()
     get_content(j, output_folder)
-    stop_db()
+#    stop_db()
 
 if __name__ == "__main__":
 

@@ -122,6 +122,12 @@ class code_cfg:
             for index in sorted(self.id2feat.keys()):
                 csv_write.writerow(self.id2feat[index])
 
+    def dump_code(self, output_file):
+        with open(output_file, 'w') as fp:
+#            csv_write = csv.writer(fp)
+#            csv_write.writerow(feature_list)
+            for index in sorted(self.id2code.keys()):
+                fp.write((self.id2code[index]).lower() + '\n')
 
     def bfs(self, source, j):
         level = 0
@@ -186,8 +192,10 @@ def get_func_cfg(file_node, j, func, uid, output_folder):
     g.bfs(func, j)
     #g.print_graph()
     g.get_feature()
+#    print(output_folder)
     g.dump_graph(os.path.join(output_folder, "%s.edge_list" %(uid)))
     g.dump_feature(os.path.join(output_folder, "%s.feat" %(uid)))
+    g.dump_code(os.path.join(output_folder, "%s.code" %(uid)))
 
 
 def dump_file_map(file_map, output_folder):
